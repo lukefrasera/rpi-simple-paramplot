@@ -125,11 +125,12 @@ int main(int argc, char **argv)
 
                     case SDLK_F1:
                         cout << "\nUsage:\n"
-                             << "  F1:       Display this help.\n"
-                             << "  F2:       Toggle VSync.\n"
-                             << "  F3:       Toggle backface culling.\n"
-                             << "  Drag LMB: Rotate camera.\n"
-                             << "  Drag MMB: Move camera.\n"
+                             << "  F1:           Display this help.\n"
+                             << "  F2:           Toggle VSync.\n"
+                             << "  F3:           Toggle backface culling.\n"
+                             << "  Drag LMB:     Rotate camera.\n"
+                             << "  Drag LMB+RMB: Roll camera.\n"
+                             << "  Drag MMB:     Move camera.\n"
                              << "\n";
                         break;
 

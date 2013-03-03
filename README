@@ -41,6 +41,7 @@ which shows you the available command-line options and how to use them.
 
 When the program is running, you can use the following keys and buttons:
     Drag Left Mouse Button:           Rotate view.
+    Drag Left+Right Mouse Button:     Roll view.
     Draw Middle Mouse Button Up/Down: Move view forward/backward.
     Escape: Quit program.
     F1:     Print keybindings.
