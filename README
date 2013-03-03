@@ -1,0 +1,53 @@
++--------------------------------------------+
+| 3D Parametric Plotter for the Raspberry Pi |
++--------------------------------------------+
+
+0. Overview
+1. Compilation
+2. Usage
+
+
+0. Overview
+===========
+
+Surfaces in three-dimensional space can be described by a function which maps
+values from a two-dimensional plane (u,v-coordinates) into 3D space (x,y,z).
+
+Playing around with these functions can be fun and you can get some very pretty
+surfaces with relatively concise formulas.
+
+I wrote this program as a tool to play around with these, but also as an
+exercise in OpenGL ES and parsing of mathematical expressions.
+
+Also, I find it extraordinarily awesome that the Raspberry Pi can do this.
+
+
+1. Compilation
+==============
+
+The program depends on GL, GLM and SDL, so make sure you have those installed
+on your system before proceeding.
+
+If you have everything, executing the following should compile the program:
+    $ make
+
+
+2. Usage
+========
+
+Take a look at the output of
+    $ ./rpi-simple-paramplot -h
+which shows you the available command-line options and how to use them.
+
+When the program is running, you can use the following keys and buttons:
+    Drag Left Mouse Button:           Rotate view.
+    Draw Middle Mouse Button Up/Down: Move view forward/backward.
+    Escape: Quit program.
+    F1:     Print keybindings.
+    F2:     Toggle vertical synchronization.
+    F3:     Toggle backface culling (can be used to
+            enhance performance, but only with closed surfaces).
+
+
+Have fun math-ing on your Raspberry Pi!
+  - Benedek Vartok  <vartokb@ethz.ch>
