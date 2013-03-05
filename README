@@ -35,9 +35,30 @@ If you have everything, executing the following should compile the program:
 2. Usage
 ========
 
-Take a look at the output of
+The output of
     $ ./rpi-simple-paramplot -h
-which shows you the available command-line options and how to use them.
+shows the following:
+
+Usage: ./rpi-simple-paramplot [options]
+Options:
+ -e <vardef>
+   Define an auxiliary variable which can be used in following occurrences
+   of -e, -x, -y and -z.  The definition may use u and v.  The option argument
+   must be of the form "<varchar>=<definition>" with the '=' sign exactly at
+   the second position (no whitespace before it!)
+ -x <xdef>, -y <ydef>, -z <zdef>
+   Specify the parametric function to plot.  u, v and user-defined variables
+   may be used.
+ -r <rdef>, -g <gdef>, -b <bdef>
+   Specify the color of the surface.  u, v and user-defined variables
+   may be used.
+ -u <u_res>, -v <v_res>
+   Set the number of sampling points along the u and v coordinates.
+   The default is 64, 64.
+Examples:
+ Sphere:
+   ./rpi-simple-paramplot -e "U=2*pi*u" -e "V=pi*v" \
+     -x "cos(U) * sin(V)" -z "sin(U) * sin(V)" -y "cos(V)";
 
 When the program is running, you can use the following keys and buttons:
     Drag Left Mouse Button:           Rotate view.
