@@ -26,7 +26,8 @@ Also, I find it extraordinarily awesome that the Raspberry Pi can do this.
 ==============
 
 The program depends on GL, GLM and SDL, so make sure you have those installed
-on your system before proceeding.
+on your system before proceeding.  On Raspbian, this command should do it:
+    $ sudo apt-get install libglm-dev libsdl1.2-dev
 
 If you have everything, executing the following should compile the program:
     $ make
