@@ -19,7 +19,7 @@ void main()
     //end_color += 0.5 * spec_col * pow(abs(dot(normal, half_vec)), 10.0);
 
     // Attenuation:
-    //end_col *= 1.0 / (1.0 + 0.005 * dist_to_light * dist_to_light);
+    //end_color *= 1.0 / (1.0 + 0.005 * dist_to_light * dist_to_light);
 
     gl_FragColor = vec4(end_color, 1);
 }

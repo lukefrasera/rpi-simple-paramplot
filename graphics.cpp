@@ -128,9 +128,92 @@ void Graphics::load_model(const glm::vec3* positions, const glm::vec3* colors, i
             const int col_idx = i + res_u * j;
             const int vert_idx = 3 * (i + res_u * j);
 
-            const vec3 norm = normalize(cross(positions[pos_idx + 1] - positions[pos_idx - 1],
-                                              positions[pos_idx - (res_u+2)] - positions[pos_idx + (res_u+2)]));
+            // Approximate normal at current vertex with 4 neighboring vertices.
+            // The normal is the cross product between the relative vectors:
+            //
+            //  .   .   .   .   .
+            //  .   .  v_n  .   .
+            //  .  v_w (*) v_e  .  ==> normal at (*): (v_e - v_w) x (v_n - v_s)
+            //  .   .  v_s  .   .
+            //  .   .   .   .   .
+            //
+            // If vertices on the grid fall together to make triangles (like at
+            // the caps of a simple sphere), one of these relative vectors can
+            // be zero which is bad.
+            // If this occurs, these vertices have to be avoided, for example
+            // like this:
+            //
+            //  .   .   .   .   .
+            //  .   .  v_n  .   .
+            //         (*)         <-- here a row of vertices is in one point
+            //  .  v_w v_s v_e  .
+            //  .   .   .   .   .
 
+            vec3 v_w = positions[pos_idx - 1];
+            vec3 v_e = positions[pos_idx + 1];
+            vec3 v_s = positions[pos_idx + (res_u + 2)];
+            vec3 v_n = positions[pos_idx - (res_u + 2)];
+
+            const float tol = 1e-15;
+
+            // Watch out for the "triangles":
+            if(length(v_e - v_w) < tol)
+            {
+                v_w = positions[pos_idx - (res_u + 2) - 1];
+                v_e = positions[pos_idx - (res_u + 2) + 1];
+
+                if(j == 0) swap(v_w, v_e);  // this is a very hacky fix for simple spheres
+
+                //cerr << "INFO: WE correction #1 at i=" << i << ", j=" << j << "\n";
+
+                if(length(v_e - v_w) < tol)
+                {
+                    v_w = positions[pos_idx + (res_u + 2) - 1];
+                    v_e = positions[pos_idx + (res_u + 2) + 1];
+
+                    if(j == res_v - 1) swap(v_w, v_e);  // as above
+
+                    //cerr << "INFO: WE correction #2 at i=" << i << ", j=" << j << "\n";
+                }
+            }
+
+            if(length(v_n - v_s) < tol)
+            {
+                v_s = positions[pos_idx + (res_u + 2) - 1];
+                v_n = positions[pos_idx - (res_u + 2) - 1];
+
+                if(i == 0) swap(v_s, v_n);
+
+                //cerr << "INFO: NS correction #1 at i=" << i << ", j=" << j << "\n";
+
+                if(length(v_n - v_s) < tol)
+                {
+                    v_s = positions[pos_idx + (res_u + 2) + 1];
+                    v_n = positions[pos_idx - (res_u + 2) + 1];
+
+                    if(i == res_u - 1) swap(v_s, v_n);
+
+                    //cerr << "INFO: NS correction #2 at i=" << i << ", j=" << j << "\n";
+                }
+            }
+
+            // Do the cross product:
+            vec3 norm = cross(v_e - v_w, v_n - v_s);
+            const float norm_len = length(norm);
+
+            if(norm_len < tol)
+            {
+                // Just give up at this point:
+                norm = vec3(0, 0, 0);
+                cerr << "WARNING: Null normal at i=" << i << ", j=" << j << "\n";
+            }
+            else
+            {
+                // Normal-ize!
+                norm /= norm_len;
+            }
+
+            // Fill in GPU buffer data:
             verts[vert_idx + 0] = positions[pos_idx].x;
             verts[vert_idx + 1] = positions[pos_idx].y;
             verts[vert_idx + 2] = positions[pos_idx].z;
