@@ -4,7 +4,7 @@ INCLUDES=-I/opt/vc/include \
 		 -I/opt/vc/include/interface/vcos/pthreads \
 		 -I/opt/vc/include/interface/vmcs_host/linux \
 		 `pkg-config --cflags sdl`
-LDFLAGS=-L/opt/vc/lib -lGLESv2 -lEGL `pkg-config --libs sdl`
+LDFLAGS=-L/opt/vc/lib -lGLESv2 -lEGL -lbcm_host `pkg-config --libs sdl`
 SRCS=main.cpp graphics.cpp evaluator.cpp
 OBJS=$(SRCS:%.cpp=%.o)
 
