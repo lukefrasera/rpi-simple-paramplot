@@ -2,6 +2,13 @@
 | 3D Parametric Plotter for the Raspberry Pi |
 +--------------------------------------------+
 
+WARNING: ---------------------------------------------------------------------+
+| A user of this software has reported that some calculation exceptions, like |
+| null divisions, have caused a reboot and filesystem corruption on his       |
+| Raspberry Pi.  I have not been able to reproduce this, but still, use this  |
+| program at your own risk :)                                                 |
++-----------------------------------------------------------------------------+
+
 0. Overview
 1. Compilation
 2. Usage
