@@ -358,7 +358,7 @@ void Graphics::init_egl_context()
           
        egl_surface = eglCreateWindowSurface(egl_display, config, &nativewindow, NULL);
        if(egl_surface == EGL_NO_SURFACE)
-           throw EGLException("eglCreateWindowSurface");
+           throw EGLException("eglCreateWindowSurface (check your RAM split)");
    }
 
    // Connect the context to the surface:
