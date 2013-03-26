@@ -11,8 +11,10 @@ struct Token
     {
         INVALID, END,
         NUM, IDENT,
+        EQUAL, NOT_EQUAL, LESS_THAN, LESS_EQUAL, GREATER_EQUAL, GREATER_THAN,
         PLUS, MINUS, ASTERISK, SLASH, CARET,
-        PAREN_OPEN, PAREN_CLOSE, COMMA
+        PAREN_OPEN, PAREN_CLOSE, COMMA,
+        QUESTION, COLON
     } type;
 
     double num;
@@ -49,9 +51,12 @@ struct Operation
     enum op_t
     {
         PUSH_NUM, PUSH_VAR,
+        EQ, NEQ, LT, LE, GE, GT,
+        IFELSE,
         ADD, SUB, MUL, DIV,
-        POW, NEG,
-        SIN, COS, TAN
+        POW, NEG, ABS,
+        SIN, COS, TAN,
+        EXP
     } op;
 
     union
@@ -78,9 +83,12 @@ public:
 
 private:
     const Token& next_token() { return cur_token = tokenizer.read_token(); }
-    void parse_expr();  // for sums
-    void parse_term();  // for products
-    void parse_coefficient();  // for powers
+    void parse_expr();  // highest level
+    void parse_ifelse();  // ternary (a ? b : c) operator
+    void parse_comparison();  // equal, less, greater ...
+    void parse_sum();  // plus, minus
+    void parse_product();  // times, divide
+    void parse_power();  // for powers
     void parse_factor();  // for numbers, identifiers and parenthesized expressions
 
     Tokenizer tokenizer;
