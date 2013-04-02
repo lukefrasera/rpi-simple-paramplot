@@ -127,6 +127,7 @@ int main(int argc, char **argv)
                              << "  F1:           Display this help.\n"
                              << "  F2:           Toggle VSync.\n"
                              << "  F3:           Toggle backface culling.\n"
+                             << "  F4:           Toggle wireframe rendering.\n"
                              << "  Drag LMB:     Rotate camera.\n"
                              << "  Drag LMB+RMB: Roll camera.\n"
                              << "  Drag MMB:     Move camera.\n"
@@ -146,6 +147,14 @@ int main(int argc, char **argv)
                             const bool new_cull = !gfx.get_culling();
                             gfx.set_culling(new_cull);
                             cout << "Culling turned " << (new_cull ? "on" : "off") << ".\n";
+                        }
+                        break;
+
+                    case SDLK_F4:
+                        {
+                            const bool new_wire = !gfx.get_wire_mode();
+                            gfx.set_wire_mode(new_wire);
+                            cout << "Wireframe turned " << (new_wire ? "on" : "off") << ".\n";
                         }
                         break;
 

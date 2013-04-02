@@ -32,6 +32,8 @@ public:
     bool get_vsync() const { return vsync; }
     void set_culling(bool culling) { if((this->culling = culling)) glEnable(GL_CULL_FACE); else glDisable(GL_CULL_FACE); }
     bool get_culling() const { return culling; }
+    void set_wire_mode(bool wire_mode) { this->wire_mode = wire_mode; }
+    bool get_wire_mode() const { return wire_mode; }
 
 private:
     void init_egl_context();
@@ -43,20 +45,22 @@ private:
 
     int res_u;
     int res_v;
-    size_t n_draw_elements;
+    size_t n_draw_elements, n_draw_wire_elements;
 
     SDL_Surface *sdl_screen;
     uint32_t screen_w, screen_h;
     EGLDisplay egl_display;
     EGLSurface egl_surface;
-    bool vsync, culling;
+    bool vsync, culling, wire_mode;
 
     GLuint vao;
     GLuint vbo_model;
-    GLuint ibo_model;
-    GLuint prog_simple;
-    GLuint attr_pos, attr_col, attr_norm;
-    GLuint uni_modelmat, uni_projmat;
+    GLuint ibo_model, ibo_model_wire;
+    GLuint prog_simple, prog_shiny;
+    GLuint attr_simple_pos, attr_simple_col;
+    GLuint attr_shiny_pos, attr_shiny_col, attr_shiny_norm;
+    GLuint uni_simple_modelmat, uni_simple_projmat;
+    GLuint uni_shiny_modelmat, uni_shiny_projmat;
 
     glm::quat cam_orient;
     float cam_pos_z;

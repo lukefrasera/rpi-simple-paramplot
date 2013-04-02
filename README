@@ -70,6 +70,13 @@ Examples:
  Sphere:
    ./rpi-simple-paramplot -e "U=2*pi*u" -e "V=pi*v" \
      -x "cos(U) * sin(V)" -z "sin(U) * sin(V)" -y "cos(V)";
+ Colorful rotaty-whirly thing:
+   ./rpi-simple-paramplot -u512 -v32 \
+     -e U=2*pi*u -e V=2*pi*v -e "R=1" -e "r=.25" \
+     -x "cos(5*U) * (R + r*sin(V) + 2*r*cos(U))" \
+     -y "sin(5*U) * (R + r*sin(V) + 2*r*cos(U))" \
+     -z ".2*r*cos(V) + 5*r*sin(U)" \
+     -r ".5 + .5*sin(U)" -g ".5 + .5*sin(2*U)" -b ".5 + .5*sin(5*U)"
 
 When the program is running, you can use the following keys and buttons:
     Left Mouse Button, Arrow Keys: Rotate view.
@@ -80,6 +87,7 @@ When the program is running, you can use the following keys and buttons:
     F2:     Toggle vertical synchronization.
     F3:     Toggle backface culling (can be used to
             enhance performance, but only with closed surfaces).
+    F4:     Toggle wireframe rendering.
 
 
 Have fun math-ing on your Raspberry Pi!

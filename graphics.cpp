@@ -13,7 +13,7 @@ using namespace std;
 using namespace glm;
 
 Graphics::Graphics()
-  : vsync(true), culling(false),
+  : vsync(true), culling(false), wire_mode(false),
     cam_orient(quat(vec3(0.f, 0.f, 0.f))),
     cam_pos_z(7)
 {
@@ -38,25 +38,58 @@ void Graphics::render()
     modelview = translate(modelview, vec3(0, 0, -cam_pos_z));
     modelview = modelview * mat4_cast(cam_orient);
 
-    glUseProgram(prog_simple);
-    glUniformMatrix4fv(uni_modelmat, 1, GL_FALSE, value_ptr(modelview));
-    glEnableVertexAttribArray(attr_pos);
-    glEnableVertexAttribArray(attr_col);
-    glEnableVertexAttribArray(attr_norm);
+    // Draw model:
+    glUseProgram(prog_shiny);
+    glUniformMatrix4fv(uni_shiny_modelmat, 1, GL_FALSE, value_ptr(modelview));
+    glEnableVertexAttribArray(attr_shiny_pos);
+    glEnableVertexAttribArray(attr_shiny_col);
+    glEnableVertexAttribArray(attr_shiny_norm);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_model);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_model);
 
-    glVertexAttribPointer(attr_pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glVertexAttribPointer(attr_col, 3, GL_FLOAT, GL_FALSE, 0, (void *)(sizeof(float) * 3 * res_u * res_v));
-    glVertexAttribPointer(attr_norm, 3, GL_FLOAT, GL_FALSE, 0, (void *)(sizeof(float) * 6 * res_u * res_v));
+    if(wire_mode)
+    {
+        glEnable(GL_POLYGON_OFFSET_FILL);
+        glPolygonOffset(1.0f, 1.0f);
+    }
+
+    glVertexAttribPointer(attr_shiny_pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribPointer(attr_shiny_col, 3, GL_FLOAT, GL_FALSE, 0, (void *)(sizeof(float) * 3 * res_u * res_v));
+    glVertexAttribPointer(attr_shiny_norm, 3, GL_FLOAT, GL_FALSE, 0, (void *)(sizeof(float) * 6 * res_u * res_v));
     glDrawElements(GL_TRIANGLE_STRIP, n_draw_elements, GL_UNSIGNED_SHORT, 0);
+
+    if(wire_mode)
+    {
+        glDisable(GL_POLYGON_OFFSET_FILL);
+    }
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    glDisableVertexAttribArray(attr_pos);
-    glDisableVertexAttribArray(attr_col);
-    glDisableVertexAttribArray(attr_norm);
+    glDisableVertexAttribArray(attr_shiny_pos);
+    glDisableVertexAttribArray(attr_shiny_col);
+    glDisableVertexAttribArray(attr_shiny_norm);
     glUseProgram(0);
+    
+    // Draw wireframe:
+    if(wire_mode)
+    {
+        glUseProgram(prog_simple);
+        glUniformMatrix4fv(uni_simple_modelmat, 1, GL_FALSE, value_ptr(modelview));
+        glEnableVertexAttribArray(attr_simple_pos);
+        glEnableVertexAttribArray(attr_simple_col);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo_model);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_model_wire);
+
+        glVertexAttribPointer(attr_simple_pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        glVertexAttribPointer(attr_simple_col, 3, GL_FLOAT, GL_FALSE, 0, (void *)(sizeof(float) * 3 * res_u * res_v));
+        glDrawElements(GL_LINES, n_draw_wire_elements, GL_UNSIGNED_SHORT, 0);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        glDisableVertexAttribArray(attr_simple_pos);
+        glDisableVertexAttribArray(attr_simple_col);
+        glUseProgram(0);
+    }
 
     eglSwapBuffers(egl_display, egl_surface);
 }
@@ -81,7 +114,9 @@ void Graphics::load_shaders()
 {
     // If the shader program is already loaded, delete it first:
     if(prog_simple != 0) glDeleteProgram(prog_simple);
+    if(prog_shiny != 0) glDeleteProgram(prog_shiny);
 
+    // Simple shader program:
     // Compile shaders:
     vector<GLuint> shaders;
     shaders.push_back(compile_shader(GL_VERTEX_SHADER, "data/shaders/simple.vs"));
@@ -94,19 +129,37 @@ void Graphics::load_shaders()
     for_each(shaders.begin(), shaders.end(), glDeleteShader);
 
     // Get locations:
-    attr_pos  = glGetAttribLocation(prog_simple, "pos");
-    attr_col  = glGetAttribLocation(prog_simple, "col");
-    attr_norm = glGetAttribLocation(prog_simple, "norm");
-    uni_modelmat = glGetUniformLocation(prog_simple, "mat_modelview");
-    uni_projmat  = glGetUniformLocation(prog_simple, "mat_projection");
+    attr_simple_pos  = glGetAttribLocation(prog_simple, "pos");
+    attr_simple_col  = glGetAttribLocation(prog_simple, "col");
+    uni_simple_modelmat = glGetUniformLocation(prog_simple, "mat_modelview");
+    uni_simple_projmat  = glGetUniformLocation(prog_simple, "mat_projection");
+
+    // Shiny shader program:
+    // Compile shaders:
+    shaders.clear();
+    shaders.push_back(compile_shader(GL_VERTEX_SHADER, "data/shaders/shiny.vs"));
+    shaders.push_back(compile_shader(GL_FRAGMENT_SHADER, "data/shaders/shiny.fs"));
+
+    // Link program:
+    prog_shiny = link_program(shaders);
+
+    // Delete shaders again:
+    for_each(shaders.begin(), shaders.end(), glDeleteShader);
+
+    // Get locations:
+    attr_shiny_pos  = glGetAttribLocation(prog_shiny, "pos");
+    attr_shiny_col  = glGetAttribLocation(prog_shiny, "col");
+    attr_shiny_norm = glGetAttribLocation(prog_shiny, "norm");
+    uni_shiny_modelmat = glGetUniformLocation(prog_shiny, "mat_modelview");
+    uni_shiny_projmat  = glGetUniformLocation(prog_shiny, "mat_projection");
 
     // Set constant uniforms:
-    glUseProgram(prog_simple);
-
     float ratio = 1.f * screen_w / screen_h;
     mat4 projection = perspective(45.f, ratio, .1f, 100.f);
-    glUniformMatrix4fv(uni_projmat, 1, GL_FALSE, value_ptr(projection));
-
+    glUseProgram(prog_simple);
+    glUniformMatrix4fv(uni_simple_projmat, 1, GL_FALSE, value_ptr(projection));
+    glUseProgram(prog_shiny);
+    glUniformMatrix4fv(uni_shiny_projmat, 1, GL_FALSE, value_ptr(projection));
     glUseProgram(0);
 }
 
@@ -115,6 +168,7 @@ void Graphics::load_model(const glm::vec3* positions, const glm::vec3* colors, i
     this->res_u = res_u;
     this->res_v = res_v;
     n_draw_elements = (res_v - 1) * 2 * res_u + (res_v - 2) * 2;
+    n_draw_wire_elements = (res_v - 1) * 2 * res_u + (res_u - 1) * 2 * res_v;
 
     const size_t n_verts = res_u * res_v;
 
@@ -235,8 +289,10 @@ void Graphics::load_model(const glm::vec3* positions, const glm::vec3* colors, i
 
     delete[] verts;
 
-    // Calculate element indices:
-    uint16_t *elems = new uint16_t[n_draw_elements];
+    uint16_t *elems;
+
+    // Calculate element indices for filled model:
+    elems = new uint16_t[n_draw_elements];
     {
         size_t idx = 0;
         for(int j=0; j < res_v - 1; ++j)
@@ -260,6 +316,36 @@ void Graphics::load_model(const glm::vec3* positions, const glm::vec3* colors, i
     glGenBuffers(1, &ibo_model);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_model);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * n_draw_elements, elems, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    delete[] elems;
+
+    // Calculate element indices for model wireframe:
+    elems = new uint16_t[n_draw_wire_elements];
+    {
+        size_t idx = 0;
+        for(int j=0; j < res_v; ++j)
+        {
+            for(int i=0; i < res_u - 1; ++i)
+            {
+                elems[idx ++] = i + res_u * j;
+                elems[idx ++] = i + 1 + res_u * j;
+            }
+        }
+        for(int i=0; i < res_u; ++i)
+        {
+            for(int j=0; j < res_v - 1; ++j)
+            {
+                elems[idx ++] = i + res_u * j;
+                elems[idx ++] = i + res_u * (j + 1);
+            }
+        }
+        assert(idx == n_draw_wire_elements);
+    }
+
+    glGenBuffers(1, &ibo_model_wire);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_model_wire);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * n_draw_wire_elements, elems, GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     delete[] elems;
