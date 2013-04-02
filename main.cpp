@@ -98,15 +98,13 @@ int main(int argc, char **argv)
                     // Camera rotation:
                     if(event.motion.state & SDL_BUTTON(1))
                     {
-                        if(event.motion.state & SDL_BUTTON(3))
-                        {
-                            v_roll += 0.05 * event.motion.xrel;
-                        }
-                        else
-                        {
-                            v_phi += 0.05 * event.motion.xrel;
-                            v_theta += 0.05 * event.motion.yrel;
-                        }
+                        v_phi += 0.05 * event.motion.xrel;
+                        v_theta += 0.05 * event.motion.yrel;
+                    }
+
+                    if(event.motion.state & SDL_BUTTON(3))
+                    {
+                        v_roll += 0.05 * event.motion.xrel;
                     }
 
                     // Camera movement:
@@ -167,6 +165,13 @@ int main(int argc, char **argv)
                     break;
                 }
             }
+
+            const Uint8 *keystate = SDL_GetKeyState(NULL);
+            // Handle camera keys:
+            if(keystate[SDLK_RIGHT]) v_phi   += 0.5;
+            if(keystate[SDLK_LEFT])  v_phi   -= 0.5;
+            if(keystate[SDLK_DOWN])  v_theta += 0.5;
+            if(keystate[SDLK_UP])    v_theta -= 0.5;
 
             // Apply camera movements:
             gfx.rotate_cam(v_phi, v_theta, v_roll);

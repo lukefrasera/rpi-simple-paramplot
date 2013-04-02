@@ -72,9 +72,9 @@ Examples:
      -x "cos(U) * sin(V)" -z "sin(U) * sin(V)" -y "cos(V)";
 
 When the program is running, you can use the following keys and buttons:
-    Drag Left Mouse Button:           Rotate view.
-    Drag Left+Right Mouse Button:     Roll view.
-    Draw Middle Mouse Button Up/Down: Move view forward/backward.
+    Left Mouse Button, Arrow Keys: Rotate view.
+    Left+Right Mouse Button:       Roll view.
+    Middle Mouse Button Up/Down:   Move view forward/backward.
     Escape: Quit program.
     F1:     Print keybindings.
     F2:     Toggle vertical synchronization.
