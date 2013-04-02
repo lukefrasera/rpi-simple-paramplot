@@ -79,9 +79,9 @@ Examples:
      -r ".5 + .5*sin(U)" -g ".5 + .5*sin(2*U)" -b ".5 + .5*sin(5*U)"
 
 When the program is running, you can use the following keys and buttons:
-    Left Mouse Button, Arrow Keys: Rotate view.
-    Left+Right Mouse Button:       Roll view.
-    Middle Mouse Button Up/Down:   Move view forward/backward.
+    Left Mouse Button, Arrow Keys:            Rotate view.
+    Right Mouse Button:                       Roll view.
+    Middle Mouse Button, Wheel, Page Up/Down: Move view forward/backward.
     Escape: Quit program.
     F1:     Print keybindings.
     F2:     Toggle vertical synchronization.

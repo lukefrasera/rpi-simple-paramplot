@@ -115,6 +115,17 @@ int main(int argc, char **argv)
                     }
                     break;
 
+                case SDL_MOUSEBUTTONDOWN:
+                    if(event.button.button == SDL_BUTTON_WHEELDOWN)
+                    {
+                        v_z += 0.1;
+                    }
+                    else if(event.button.button == SDL_BUTTON_WHEELUP)
+                    {
+                        v_z -= 0.1;
+                    }
+                    break;
+
                 case SDL_KEYDOWN:
                     switch(event.key.keysym.sym)
                     {
@@ -124,13 +135,14 @@ int main(int argc, char **argv)
 
                     case SDLK_F1:
                         cout << "\nUsage:\n"
-                             << "  F1:           Display this help.\n"
-                             << "  F2:           Toggle VSync.\n"
-                             << "  F3:           Toggle backface culling.\n"
-                             << "  F4:           Toggle wireframe rendering.\n"
-                             << "  Drag LMB:     Rotate camera.\n"
-                             << "  Drag LMB+RMB: Roll camera.\n"
-                             << "  Drag MMB:     Move camera.\n"
+                             << "  F1:               Display this help.\n"
+                             << "  F2:               Toggle VSync.\n"
+                             << "  F3:               Toggle backface culling.\n"
+                             << "  F4:               Toggle wireframe rendering.\n"
+                             << "  LMB / Arrow keys: Rotate camera.\n"
+                             << "  RMB:              Roll camera.\n"
+                             << "  MMB / Mouse wheel / Page keys:\n"
+                             << "                    Move camera.\n"
                              << "\n";
                         break;
 
@@ -178,10 +190,12 @@ int main(int argc, char **argv)
 
             const Uint8 *keystate = SDL_GetKeyState(NULL);
             // Handle camera keys:
-            if(keystate[SDLK_RIGHT]) v_phi   += 0.5;
-            if(keystate[SDLK_LEFT])  v_phi   -= 0.5;
-            if(keystate[SDLK_DOWN])  v_theta += 0.5;
-            if(keystate[SDLK_UP])    v_theta -= 0.5;
+            if(keystate[SDLK_RIGHT])    v_phi   += 0.5;
+            if(keystate[SDLK_LEFT])     v_phi   -= 0.5;
+            if(keystate[SDLK_DOWN])     v_theta += 0.5;
+            if(keystate[SDLK_UP])       v_theta -= 0.5;
+            if(keystate[SDLK_PAGEDOWN]) v_z     += 0.02;
+            if(keystate[SDLK_PAGEUP])   v_z     -= 0.02;
 
             // Apply camera movements:
             gfx.rotate_cam(v_phi, v_theta, v_roll);
