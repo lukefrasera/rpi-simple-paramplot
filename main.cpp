@@ -40,6 +40,7 @@ void print_help(const char* progname)
          << "   may be used.\n"
          << " -u <u_res>, -v <v_res>\n"
          << "   Set the number of sampling points along the u and v coordinates.\n"
+         << "   Their product must not be greater than 2^16.\n"
          << "   The default is " << res_u_def << ", " << res_v_def << ".\n"
          << "\nExamples:\n"
          << " Sphere:\n"
@@ -256,12 +257,10 @@ void gen_model(int argc, char **argv, Graphics& gfx)
 
             case 'u':
                 res_u = atoi(optarg);
-                assert(res_u > 1 && res_u <= 256);
                 break;
 
             case 'v':
                 res_v = atoi(optarg);
-                assert(res_v > 1 && res_v <= 256);
                 break;
 
             case 'x':
@@ -289,6 +288,8 @@ void gen_model(int argc, char **argv, Graphics& gfx)
                 break;
             }
         }
+
+        assert(res_u > 1 && res_v > 1 && res_u * res_v <= 256 * 256);
 
         // Position evaluators:
         Evaluator x_eval(x_str, varlist, constmap),
