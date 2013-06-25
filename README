@@ -2,16 +2,18 @@
 | 3D Parametric Plotter for the Raspberry Pi |
 +--------------------------------------------+
 
-WARNING: ---------------------------------------------------------------------+
-| A user of this software has reported that some calculation exceptions, like |
-| null divisions, have caused a reboot and filesystem corruption on his       |
-| Raspberry Pi.  I have not been able to reproduce this, but still, use this  |
-| program at your own risk :)                                                 |
-+-----------------------------------------------------------------------------+
+WARNING: ------------------------------------------------------------------+
+| Use this program at your own risk!                                       |
+| No seriously bad things have happened on clean installations without     |
+| overclocking, but some users with specific set-ups did have some issues. |
+| If you have any important data on your Raspberry Pi, it's a good idea to |
+| back that up before running this program.                                |
++--------------------------------------------------------------------------+
 
 0. Overview
 1. Compilation
 2. Usage
+3. Bugs
 
 
 0. Overview
@@ -85,9 +87,24 @@ When the program is running, you can use the following keys and buttons:
     Escape: Quit program.
     F1:     Print keybindings.
     F2:     Toggle vertical synchronization.
-    F3:     Toggle backface culling (can be used to
-            enhance performance, but only with closed surfaces).
+    F3:     Toggle backface culling (can be used to enhance performance,
+            but only with correctly oriented closed surfaces).
     F4:     Toggle wireframe rendering.
+
+
+3. Bugs
+=======
+
+Enabling overscan settings in the RPi config may cause a black screen until
+the next reboot with overscan disabled.  Testing and reproduction needed.
+
+Combinations of overclocking and null divisions have in one case lead to
+instant reboots and some filesystem corruption, although this might have
+been caused by an already corrupt system.
+
+Compiling with -O3 optimization causes some very very weird floating point
+operation results which leads to the camera spazzing out.  You can compile
+everything except graphics.cpp with -O3 for a great performance boost though.
 
 
 Have fun math-ing on your Raspberry Pi!
