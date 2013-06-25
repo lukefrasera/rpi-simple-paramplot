@@ -97,6 +97,7 @@ When the program is running, you can use the following keys and buttons:
 
 Enabling overscan settings in the RPi config may cause a black screen until
 the next reboot with overscan disabled.  Testing and reproduction needed.
+Apparently SDL_SetVideoMode segfaults.  Doesn't seem to happen in X11.
 
 Combinations of overclocking and null divisions have in one case lead to
 instant reboots and some filesystem corruption, although this might have
